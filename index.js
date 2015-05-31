@@ -182,6 +182,7 @@ app.post('/gyazz-webhook', function(req, res) {
   var title = req.body.title;
   var text = req.body.text;
   res.send(url+wiki+title+text);
+  console.log(req);
   var gyazz = new Gyazz();
       gyazz.url = url;
       gyazz.wiki = wiki;
@@ -190,6 +191,7 @@ app.post('/gyazz-webhook', function(req, res) {
       gyazz.save();
 });
 app.get('/gyazzs', function(req, res) {
+  console.log('HOGEHOGE');
   Gyazz.find({}, function(err, docs) {
     res.send(docs);
   });
