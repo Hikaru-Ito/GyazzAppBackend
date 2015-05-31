@@ -1,13 +1,16 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
+var request = require('request');
 var bodyParser = require('body-parser');
 var _ = require('lodash');
 
 var app = express();
 
+
 app.set('port', (process.env.PORT || 5000));
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 var Schema = mongoose.Schema;
@@ -181,7 +184,7 @@ app.post('/gyazz-webhook', function(req, res) {
   var wiki = req.body.wiki;
   var title = req.body.title;
   var text = req.body.text;
-  res.send(url+wiki+title+text);
+  res.send('ok');
   console.log(req);
   var gyazz = new Gyazz();
       gyazz.url = url;
@@ -191,11 +194,32 @@ app.post('/gyazz-webhook', function(req, res) {
       gyazz.save();
 });
 app.get('/gyazzs', function(req, res) {
-  console.log('HOGEHOGE');
   Gyazz.find({}, function(err, docs) {
     res.send(docs);
   });
 });
+// app.get('/sendRequest', function(req, res) {
+//   request({
+//     url: 'http://localhost:5000/gyazz-webhook',
+//     method: 'POST',
+//     json: {
+//       url: 'url',
+//       wiki: 'page.wiki',
+//       title: 'page.title',
+//       text: 'page.text',
+//     }
+//   }, function(err, res, body) {
+//     if (err) {
+//       console.log(err);
+//     }
+//       console.log(res);
+//       console.log(body);
+//   });
+//       res.send('ok');
+
+
+// })
+
 
 
 function handleError(res, err) {
