@@ -248,6 +248,8 @@ app.get('/gyazzs', function(req, res) {
         'Content-Type' : 'application/json'
     };
     users.push('ALLRECIEVE');
+    console.log(users);
+
     var form = JSON.stringify({
       "channels": users,
       "data":{
