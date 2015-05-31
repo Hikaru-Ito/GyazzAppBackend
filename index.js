@@ -41,7 +41,7 @@ var StarSchema = new Schema({
 });
 mongoose.model('Star', StarSchema);
 
-var GyazzSchema = new Schema({
+var GyazzPageNotificationSchema = new Schema({
   url:  String,
   wiki:  String,
   title: String,
@@ -51,13 +51,13 @@ var GyazzSchema = new Schema({
     default: Date.now
   }
 });
-mongoose.model('Gyazz', GyazzSchema);
+mongoose.model('GyazzPageNotification', GyazzPageNotificationSchema);
 
 mongoose.connect(uri);
 
 var User = mongoose.model('User');
 var Star = mongoose.model('Star');
-var Gyazz = mongoose.model('Gyazz');
+var GyazzPageNotification = mongoose.model('GyazzPageNotification');
 
 
 
@@ -185,40 +185,121 @@ app.post('/gyazz-webhook', function(req, res) {
   var title = req.body.title;
   var text = req.body.text;
   res.send('ok');
-  console.log(req);
-  var gyazz = new Gyazz();
+
+  // データベースに登録
+  var gyazz = new GyazzPageNotification();
       gyazz.url = url;
       gyazz.wiki = wiki;
       gyazz.title = title;
       gyazz.text = text;
       gyazz.save();
+
+  // スターに登録している人を抽出
+  var users = []; // user_idのみ格納
+  Star.find({page_name:title}, function(e, r) {
+    _.forEach(r, function(n, key) {
+      users.push('GyazzUserID'+n.user_id);
+    });
+
+    // プッシュ通知
+    var message = '「'+title+'」が更新されました。'
+    var url = 'https://api.parse.com/1/push';
+    var headers = {
+        'X-Parse-Application-Id': 'pVATfByzSVGuH1cfC7q9sdfZhOSBBZjoToIRVXli',
+        'X-Parse-REST-API-Key' : 'lyQJVyUEVzJCqq2A5HYNRx5ytlSuNtbjlqkwA6R6',
+        'Content-Type' : 'application/json'
+    };
+    users.push('ALLRECIEVE');
+    var form = JSON.stringify({
+      "channels": users,
+      "data":{
+        "alert": message,
+        "badge" :0,
+        "sound":"default",
+        "title": "Gyazzが更新されました"
+      }
+    });
+
+    request.post({ url: url, form: form, headers: headers }, function (e, r, body) {
+        res.send('ok');
+    });
+
+  });
+
 });
 app.get('/gyazzs', function(req, res) {
-  Gyazz.find({}, function(err, docs) {
-    res.send(docs);
+  GyazzPageNotification.find({}, function(err, docs) {
+    // res.send(docs);
   });
+
+  // スターに登録している人を抽出
+  var users = []; // user_idのみ格納
+  Star.find({page_name:req.query.title}, function(e, r) {
+    _.forEach(r, function(n, key) {
+      users.push('GyazzUserID'+n.user_id);
+    });
+
+    // プッシュ通知
+    var message = '「Page」が更新されました。'
+    var url = 'https://api.parse.com/1/push';
+    var headers = {
+        'X-Parse-Application-Id': 'pVATfByzSVGuH1cfC7q9sdfZhOSBBZjoToIRVXli',
+        'X-Parse-REST-API-Key' : 'lyQJVyUEVzJCqq2A5HYNRx5ytlSuNtbjlqkwA6R6',
+        'Content-Type' : 'application/json'
+    };
+    users.push('ALLRECIEVE');
+    var form = JSON.stringify({
+      "channels": users,
+      "data":{
+        "alert": message,
+        "badge" :0,
+        "sound":"default",
+        "title": "Gyazzが更新されました"
+      }
+    });
+
+    request.post({ url: url, form: form, headers: headers }, function (e, r, body) {
+        console.log(body);
+
+        res.send('ok');
+    });
+
+  });
+
+
+
+
+
 });
-// app.get('/sendRequest', function(req, res) {
-//   request({
-//     url: 'http://localhost:5000/gyazz-webhook',
-//     method: 'POST',
-//     json: {
-//       url: 'url',
-//       wiki: 'page.wiki',
-//       title: 'page.title',
-//       text: 'page.text',
-//     }
-//   }, function(err, res, body) {
-//     if (err) {
-//       console.log(err);
-//     }
-//       console.log(res);
-//       console.log(body);
-//   });
-//       res.send('ok');
+app.get('/testPush', function(req, res) {
 
 
-// })
+  var url = 'https://api.parse.com/1/push';
+  var headers = {
+      'X-Parse-Application-Id': 'pVATfByzSVGuH1cfC7q9sdfZhOSBBZjoToIRVXli',
+      'X-Parse-REST-API-Key' : 'lyQJVyUEVzJCqq2A5HYNRx5ytlSuNtbjlqkwA6R6',
+      'Content-Type' : 'application/json'
+  };
+  var form = JSON.stringify({
+    "channels": [
+      "TEST",
+      "Mets"
+    ],
+    "data":{
+      "alert": "From GyazzServer",
+      "badge" :0,
+      "sound":"default"
+    }
+  });
+
+  request.post({ url: url, form: form, headers: headers }, function (e, r, body) {
+      console.log(body);
+
+      res.send('ok');
+  });
+
+
+})
 
 
 
