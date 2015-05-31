@@ -7,8 +7,8 @@ var app = express();
 app.set('port', (process.env.PORT || 5000));
 app.use(express.static(__dirname + '/public'));
 
-// var Schema = mongoose.Schema;
-// var uri = process.env.MONGOLAB_URL || 'mongodb://localhost/mongo_data';
+var Schema = mongoose.Schema;
+var uri = process.env.MONGOLAB_URL || 'mongodb://localhost/mongo_data';
 // console.log('USE_DB_SOURSE:'+uri);
 
 
