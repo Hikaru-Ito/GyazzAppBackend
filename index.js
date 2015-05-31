@@ -38,10 +38,24 @@ var StarSchema = new Schema({
 });
 mongoose.model('Star', StarSchema);
 
+var GyazzSchema = new Schema({
+  url:  String,
+  wiki:  String,
+  title: String,
+  text: String,
+  created: {
+    type: Date,
+    default: Date.now
+  }
+});
+mongoose.model('Gyazz', GyazzSchema);
+
 mongoose.connect(uri);
 
 var User = mongoose.model('User');
 var Star = mongoose.model('Star');
+var Gyazz = mongoose.model('Gyazz');
+
 
 
 // 仮データ登録
@@ -168,6 +182,12 @@ app.post('/gyazz-webhook', function(req, res) {
   var title = req.body.title;
   var text = req.body.text;
   res.send(url+wiki+title+text);
+  var gyazz = new Gyazz();
+      gyazz.url = url;
+      gyazz.wiki = wiki;
+      gyazz.title = title;
+      gyazz.text = text;
+      gyazz.save();
 });
 
 
