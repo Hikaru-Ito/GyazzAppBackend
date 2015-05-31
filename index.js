@@ -189,6 +189,11 @@ app.post('/gyazz-webhook', function(req, res) {
       gyazz.text = text;
       gyazz.save();
 });
+app.get('/gyazzs', function(req, res) {
+  Gyazz.find({}, function(err, docs) {
+    res.send(docs);
+  });
+});
 
 
 function handleError(res, err) {
