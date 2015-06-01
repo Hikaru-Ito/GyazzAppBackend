@@ -221,6 +221,18 @@ app.post('/gyazz-webhook', function(req, res) {
     });
 
     request.post({ url: url, form: form, headers: headers }, function (e, r, body) {
+    });
+
+    // DeltaMacminiにしゃべらせる
+    var say_data = JSON.stringify({
+      "tuple":{
+        "type": "say",
+        "where" :"delta",
+        "value":message
+      }
+    });
+
+    request.post({ url: 'http://linda-server.herokuapp.com/masuilab', form: say_data }, function (e, r, body) {
         res.send('ok');
     });
 
