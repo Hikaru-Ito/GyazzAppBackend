@@ -233,6 +233,11 @@ app.get('/gyazzs', function(req, res) {
     res.send(docs);
   });
 });
+app.get('/stars', function(req, res) {
+  Stars.find({}, function(err, docs) {
+    res.send(docs);
+  });
+});
 
 
 
