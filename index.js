@@ -184,7 +184,6 @@ app.post('/gyazz-webhook', function(req, res) {
   var wiki = req.body.wiki;
   var title = req.body.title;
   var text = req.body.text;
-  res.send('ok');
 
   // データベースに登録
   var gyazz = new GyazzPageNotification();
@@ -227,81 +226,12 @@ app.post('/gyazz-webhook', function(req, res) {
   });
 
 });
+
 app.get('/gyazzs', function(req, res) {
   GyazzPageNotification.find({}, function(err, docs) {
     // res.send(docs);
   });
-
-  // スターに登録している人を抽出
-  var users = []; // user_idのみ格納
-  Star.find({page_name:req.query.title}, function(e, r) {
-    _.forEach(r, function(n, key) {
-      users.push('GyazzUserID'+n.user_id);
-    });
-
-    // プッシュ通知
-    var message = '「Page」が更新されました。'
-    var url = 'https://api.parse.com/1/push';
-    var headers = {
-        'X-Parse-Application-Id': 'pVATfByzSVGuH1cfC7q9sdfZhOSBBZjoToIRVXli',
-        'X-Parse-REST-API-Key' : 'lyQJVyUEVzJCqq2A5HYNRx5ytlSuNtbjlqkwA6R6',
-        'Content-Type' : 'application/json'
-    };
-    users.push('ALLRECIEVE');
-    console.log(users);
-
-    var form = JSON.stringify({
-      "channels": users,
-      "data":{
-        "alert": message,
-        "badge" :0,
-        "sound":"default",
-        "title": "Gyazzが更新されました"
-      }
-    });
-
-    request.post({ url: url, form: form, headers: headers }, function (e, r, body) {
-        console.log(body);
-
-        res.send('ok');
-    });
-
-  });
-
-
-
-
-
 });
-app.get('/testPush', function(req, res) {
-
-
-  var url = 'https://api.parse.com/1/push';
-  var headers = {
-      'X-Parse-Application-Id': 'pVATfByzSVGuH1cfC7q9sdfZhOSBBZjoToIRVXli',
-      'X-Parse-REST-API-Key' : 'lyQJVyUEVzJCqq2A5HYNRx5ytlSuNtbjlqkwA6R6',
-      'Content-Type' : 'application/json'
-  };
-  var form = JSON.stringify({
-    "channels": [
-      "TEST",
-      "Mets"
-    ],
-    "data":{
-      "alert": "From GyazzServer",
-      "badge" :0,
-      "sound":"default"
-    }
-  });
-
-  request.post({ url: url, form: form, headers: headers }, function (e, r, body) {
-      console.log(body);
-
-      res.send('ok');
-  });
-
-
-})
 
 
 
